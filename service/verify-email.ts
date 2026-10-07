@@ -3,29 +3,22 @@ import { NextRequest, NextResponse } from "next/server";
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export async function POST(request: NextRequest) {
-  const cookie = request.headers.get("cookie");
+  const body = await request.json();
 
   const response = await fetch(
-    `${API_URL}/api/v1/auth/refresh-token`,
+    `${API_URL}/api/v1/auth/verify-email`,
     {
       method: "POST",
       headers: {
-        Cookie: cookie ?? "",
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify(body),
     }
   );
 
   const data = await response.json().catch(() => null);
 
-  const nextResponse = NextResponse.json(data, {
+  return NextResponse.json(data, {
     status: response.status,
   });
-
-  const setCookie = response.headers.get("set-cookie");
-
-  if (setCookie) {
-    nextResponse.headers.set("set-cookie", setCookie);
-  }
-
-  return nextResponse;
 }

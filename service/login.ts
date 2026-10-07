@@ -3,17 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export async function POST(request: NextRequest) {
-  const cookie = request.headers.get("cookie");
+  const body = await request.json();
 
-  const response = await fetch(
-    `${API_URL}/api/v1/auth/refresh-token`,
-    {
-      method: "POST",
-      headers: {
-        Cookie: cookie ?? "",
-      },
-    }
-  );
+  const response = await fetch(`${API_URL}/api/v1/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
 
   const data = await response.json().catch(() => null);
 
