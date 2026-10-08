@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, MailCheck } from "lucide-react";
 import { toast } from "sonner";
 
@@ -14,42 +14,42 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { authRequest } from "@/lib/auth-api";
+import { verifyEmail } from "@/service/verify-email";
 
 export function VerifyEmailForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const token = searchParams.get("token");
+  const email = searchParams.get("email");
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(Boolean(token));
+  const [verified, setVerified] = useState(false);
+  const hasRun = useRef(false);
 
   useEffect(() => {
+
+    if (!token) return;
+
+
+    if (hasRun.current) return;
+    hasRun.current = true;
+
     const verify = async () => {
-      if (!token) {
-        toast.error("Verification token is missing");
-        setLoading(false);
-        return;
-      }
-
       try {
-        await authRequest("/verify-email", {
-          method: "POST",
-          body: JSON.stringify({
-            token,
-          }),
-        });
+        await verifyEmail({ token });
 
+        setVerified(true);
         toast.success("Email verified successfully");
 
-        router.push("/login");
+        setTimeout(() => router.push("/login"), 1500);
       } catch (error) {
         toast.error(
           error instanceof Error
             ? error.message
             : "Email verification failed"
         );
-
+      } finally {
         setLoading(false);
       }
     };
@@ -65,7 +65,13 @@ export function VerifyEmailForm() {
         <CardTitle>Verify your email</CardTitle>
 
         <CardDescription>
-          We're verifying your email address.
+          {!token
+            ? `We sent a verification link${email ? ` to ${email}` : ""}. Open it to verify your account.`
+            : loading
+              ? "We're verifying your email address."
+              : verified
+                ? "Your email is verified. Redirecting to login..."
+                : "Verification failed. The link may be invalid or expired."}
         </CardDescription>
       </CardHeader>
 
