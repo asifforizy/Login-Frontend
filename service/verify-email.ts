@@ -1,4 +1,4 @@
-export async function verifyEmail(payload: { token: string }) {
+export async function verifyEmail(payload: { email: string; otp: string }) {
   const res = await fetch("/api/v1/auth/verify-email", {
     method: "POST",
     credentials: "include",

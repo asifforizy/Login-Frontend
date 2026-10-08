@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Loader2, MailCheck } from "lucide-react";
 import { toast } from "sonner";
 
@@ -13,78 +13,79 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 import { verifyEmail } from "@/service/verify-email";
+import { refreshProfile } from "@/service/refresh_profile";
+
 
 export function VerifyEmailForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const email = searchParams.get("email") ?? "";
 
-  const token = searchParams.get("token");
-  const email = searchParams.get("email");
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const [loading, setLoading] = useState(Boolean(token));
-  const [verified, setVerified] = useState(false);
-  const hasRun = useRef(false);
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  useEffect(() => {
+    if (!email) {
+      toast.error("Email is missing. Please register again.");
+      return;
+    }
+    if (!/^\d{6}$/.test(otp)) {
+      toast.error("Enter the 6-digit code from your email");
+      return;
+    }
 
-    if (!token) return;
-
-
-    if (hasRun.current) return;
-    hasRun.current = true;
-
-    const verify = async () => {
-      try {
-        await verifyEmail({ token });
-
-        setVerified(true);
-        toast.success("Email verified successfully");
-
-        setTimeout(() => router.push("/login"), 1500);
-      } catch (error) {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Email verification failed"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    verify();
-  }, [token, router]);
+    try {
+      setLoading(true);
+      await verifyEmail({ email, otp });
+      await refreshProfile();
+      toast.success("Email verified successfully");
+      router.push("/login");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Email verification failed"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
         <MailCheck className="mx-auto mb-3 size-10 text-primary" />
-
         <CardTitle>Verify your email</CardTitle>
-
         <CardDescription>
-          {!token
-            ? `We sent a verification link${email ? ` to ${email}` : ""}. Open it to verify your account.`
-            : loading
-              ? "We're verifying your email address."
-              : verified
-                ? "Your email is verified. Redirecting to login..."
-                : "Verification failed. The link may be invalid or expired."}
+          We sent a 6-digit code to {email || "your email"}. Enter it below.
+          The code expires in 5 minutes.
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="flex justify-center">
-        {loading && (
-          <Loader2 className="size-6 animate-spin text-primary" />
-        )}
+      <CardContent>
+        <form onSubmit={onSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <Label htmlFor="otp">Verification code</Label>
+            <Input
+              id="otp"
+              inputMode="numeric"
+              maxLength={6}
+              placeholder="123456"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+              className="text-center text-lg tracking-widest"
+            />
+          </div>
 
-        {!loading && (
-          <Button onClick={() => router.push("/login")}>
-            Go to Login
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
+            Verify Email
           </Button>
-        )}
+        </form>
       </CardContent>
     </Card>
   );

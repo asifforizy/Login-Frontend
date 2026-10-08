@@ -5,6 +5,8 @@ import { GoogleLogin } from "@react-oauth/google";
 import { toast } from "sonner";
 
 import { googleLogin } from "@/service/google";
+import { refreshProfile } from "@/service/refresh_profile";
+
 
 export function GoogleAuthButton() {
   const router = useRouter();
@@ -19,8 +21,9 @@ export function GoogleAuthButton() {
           }
           try {
             await googleLogin({ idToken: res.credential });
+            await refreshProfile();
             toast.success("Login successful");
-            router.push("/dashboard");
+            router.push("/");
             router.refresh();
           } catch (error) {
             toast.error(

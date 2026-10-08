@@ -12,7 +12,6 @@ const PublicLayout =async({ children }: { children: React.ReactNode }) => {
   return (
     <div>
       <Navbar user= {user}></Navbar>
-      {children}
     <GoogleProvider>{children}</GoogleProvider>
     </div>
   )
