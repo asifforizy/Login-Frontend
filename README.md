@@ -24,11 +24,6 @@ A practice project built with Next.js to learn and implement credential-based au
 - Sonner
 - React OAuth Google
 
-## Backend API
-
-This frontend communicates with a separate Express.js authentication backend.
-
-**Backend URL:** https://login-backend-five-chi.vercel.app
 
 ## Getting Started
 
