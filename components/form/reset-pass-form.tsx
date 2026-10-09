@@ -20,9 +20,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { resetPassword } from "@/service/reset-pass";
-import { resetPasswordSchema } from "@/lib/validation";
+import { ResetPasswordZodSchema } from "@/lib/validation";
 
-type FormValues = z.infer<typeof resetPasswordSchema>;
+
+
+type FormValues = z.infer<typeof ResetPasswordZodSchema>;
 
 export function ResetPasswordForm() {
     const router = useRouter();
@@ -35,7 +37,7 @@ export function ResetPasswordForm() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const form = useForm<FormValues>({
-        resolver: zodResolver(resetPasswordSchema),
+        resolver: zodResolver(ResetPasswordZodSchema),
         defaultValues: { password: "", confirmPassword: "" },
     });
 

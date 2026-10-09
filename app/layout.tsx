@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 
-import { Toaster } from "@/components/ui/sonner";
+
 import "./globals.css";
-import { GoogleProvider } from "@/components/provider/google-provider";
+import { Toaster } from "sonner";
+import { GoogleProvider } from "@/provider/goole-provider";
+
 
 
 export const metadata: Metadata = {

@@ -24,10 +24,11 @@ import { loginUser } from "@/service/login";
 
 
 import type { z } from "zod";
-import { loginSchema } from "@/lib/validation";
-import { GoogleAuthButton } from "./google-btn";
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+import { GoogleAuthButton } from "./google-btn";
+import { LoginZodSchema } from "@/lib/validation";
+
+type LoginFormValues = z.infer<typeof LoginZodSchema>;
 
 export function LoginForm() {
     const router = useRouter();
@@ -36,7 +37,7 @@ export function LoginForm() {
     const [loading, setLoading] = useState(false);
 
     const form = useForm<LoginFormValues>({
-        resolver: zodResolver(loginSchema),
+        resolver: zodResolver(LoginZodSchema),
         defaultValues: {
             email: "",
             password: "",

@@ -17,7 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { verifyEmail } from "@/service/verify-email";
-import { refreshProfile } from "@/service/refresh_profile";
+import { refreshProfile } from "@/service/refresh-profile";
+
 
 
 export function VerifyEmailForm() {

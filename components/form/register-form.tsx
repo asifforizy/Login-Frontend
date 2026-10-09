@@ -24,10 +24,11 @@ import { registerUser } from "@/service/register";
 
 
 import type { z } from "zod";
-import { registerSchema } from "@/lib/validation";
-import { GoogleAuthButton } from "./google-btn";
 
-type RegisterFormValues = z.infer<typeof registerSchema>;
+import { GoogleAuthButton } from "./google-btn";
+import {  UserRegistrationZodSchema } from "@/lib/validation";
+
+type RegisterFormValues = z.infer<typeof UserRegistrationZodSchema>;
 
 export function RegisterForm() {
     const router = useRouter();
@@ -38,7 +39,7 @@ export function RegisterForm() {
     const [loading, setLoading] = useState(false);
 
     const form = useForm<RegisterFormValues>({
-        resolver: zodResolver(registerSchema),
+        resolver: zodResolver(UserRegistrationZodSchema),
         defaultValues: {
             name: "",
             email: "",

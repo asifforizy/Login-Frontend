@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { GoogleLogin } from "@react-oauth/google";
 import { toast } from "sonner";
-
 import { googleLogin } from "@/service/google";
-import { refreshProfile } from "@/service/refresh_profile";
+import { refreshProfile } from "@/service/refresh-profile";
+
 
 
 export function GoogleAuthButton() {

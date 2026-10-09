@@ -1,6 +1,7 @@
 
-import { GoogleProvider } from '@/components/provider/google-provider'
+
 import { Navbar } from '@/components/shared/navbar'
+import { GoogleProvider } from '@/provider/goole-provider'
 import { getMe } from '@/service/getme'
 import React from 'react'
 
@@ -12,7 +13,7 @@ const PublicLayout =async({ children }: { children: React.ReactNode }) => {
   return (
     <div>
       <Navbar user= {user}></Navbar>
-    <GoogleProvider>{children}</GoogleProvider>
+      <GoogleProvider>{children}</GoogleProvider>
     </div>
   )
 }

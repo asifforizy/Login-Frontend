@@ -1,31 +1,53 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+export async function POST() {
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get("refreshToken")?.value;
 
-export async function POST(request: NextRequest) {
-  const cookie = request.headers.get("cookie");
+  if (!refreshToken) {
+    return NextResponse.json(
+      { success: false, message: "No refresh token" },
+      { status: 401 }
+    );
+  }
 
-  const response = await fetch(
-    `${API_URL}/api/v1/auth/refresh-token`,
+  const res = await fetch(
+    `${process.env.BACKEND_API_URL}/api/v1/auth/refresh-token`,
     {
       method: "POST",
-      headers: {
-        Cookie: cookie ?? "",
-      },
+      headers: { Cookie: `refreshToken=${refreshToken}` },
+      cache: "no-store",
     }
   );
 
-  const data = await response.json().catch(() => null);
+  const data = await res.json().catch(() => null);
 
-  const nextResponse = NextResponse.json(data, {
-    status: response.status,
-  });
-
-  const setCookie = response.headers.get("set-cookie");
-
-  if (setCookie) {
-    nextResponse.headers.set("set-cookie", setCookie);
+  if (!res.ok) {
+    return NextResponse.json(
+      { success: false, message: data?.message ?? "Refresh failed" },
+      { status: res.status }
+    );
   }
 
-  return nextResponse;
+  const accessToken = data?.data?.accessToken ?? data?.accessToken;
+  const newRefreshToken = data?.data?.refreshToken ?? data?.refreshToken;
+
+  if (accessToken) {
+    cookieStore.set("accessToken", accessToken, {
+      httpOnly: true,
+      path: "/",
+      maxAge: 60 * 60 * 24,
+    });
+  }
+
+  if (newRefreshToken) {
+    cookieStore.set("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+  }
+
+  return NextResponse.json({ success: true });
 }

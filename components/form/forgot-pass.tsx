@@ -19,16 +19,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { forgotPassword } from "@/service/forgot-pass";
-import { forgotPasswordSchema } from "@/lib/validation";
+import { ForgotPasswordZodSchema } from "@/lib/validation";
 
 
-type FormValues = z.infer<typeof forgotPasswordSchema>;
+
+type FormValues = z.infer<typeof ForgotPasswordZodSchema>;
 
 export function ForgotPasswordForm() {
     const [loading, setLoading] = useState(false);
 
     const form = useForm<FormValues>({
-        resolver: zodResolver(forgotPasswordSchema),
+        resolver: zodResolver(ForgotPasswordZodSchema),
         defaultValues: {
             email: "",
         },

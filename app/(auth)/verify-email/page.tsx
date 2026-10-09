@@ -1,4 +1,6 @@
-import { VerifyEmailForm } from "@/components/shared/verify-email-form";
+import { VerifyEmailForm } from "@/components/form/verify-email-form";
+
+
 
 export default function VerifyEmailPage() {
   return (
